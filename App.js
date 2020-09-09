@@ -1,74 +1,128 @@
-import React, { Component, useState } from "react";
-import { StyleSheet, Text, View, SafeAreaView } from "react-native";
+import React, { Component } from "react";
+import { StyleSheet, Text, View, Dimensions } from "react-native";
 import Buttonui from "./components/Button";
+const { height } = Dimensions.get("window");
 
-export default function App() {
-  const [calVal, setCalVal] = useState("0");
-  const [operator, setOperator] = useState(null);
-  const [PastVal, setPastVal] = useState(null);
-  const [NextVal, setNextVal] = useState(null);
-  const [Check, setCheck] = useState(true);
+const buttons = [
+  ["DEL"],
+  ["1", "2", "3", "+"],
+  ["4", "5", "6", "-"],
+  ["7", "8", "9", "*"],
+  [".", "0", "=", "/"],
+];
 
-  handlePress = (type, value) => {
-    if (type === "number") {
-      if (Check) {
-        setCheck(false);
-        setCalVal(`${value}`);
-      } else {
-        setNextVal(`${value}`);
-        setCheck(true);
-      }
-    }
-    if (type === "operator") {
-      setOperator(value);
-      setPastVal(calVal);
-      setNextVal(NextVal);
-    }
-    if (type === "equal") {
-      const current = parseFloat(calVal);
-      const prev = parseFloat(NextVal);
+export default class App extends Component {
+  constructor() {
+    super();
+    this.initailState = {
+      displayValue: "0",
+      displayResult: "0",
+      operator: null,
+    };
+    this.state = this.initailState;
+  }
+  renderButton() {
+    let layouts = buttons.map((buttonRows, index) => {
+      let rowItem = buttonRows.map((buttonItem, buttonIndex) => {
+        return (
+          <Buttonui
+            key={"btn-" + buttonIndex}
+            value={buttonItem}
+            handlePress={this.handleInput.bind(this, buttonItem)}
+          />
+        );
+      });
+      return (
+        <View style={styles.inputRow} key={"row-" + index}>
+          {rowItem}
+        </View>
+      );
+    });
+    return layouts;
+  }
 
-      if (operator === "+") {
-        setCalVal(prev + current);
-        setOperator(null);
-      }
+  handleInput = (input) => {
+    const {
+      displayValue,
+      operator,
+    } = this.state;
+    switch (input) {
+      case "0":
+      case "1":
+      case "2":
+      case "3":
+      case "4":
+      case "5":
+      case "6":
+      case "7":
+      case "8":
+      case "9":
+        if (operator !== null) {
+          this.setState({
+            operator: null,
+          });
+        }
+        this.setState({
+          displayValue: displayValue === "0" ? input : displayValue + input,
+        });
+        break;
 
-      if (operator === "-") {
-        setCalVal(prev - current);
-        setOperator(null);
-      }
+      case "+":
+      case "-":
+      case "*":
+      case "/":
+        this.setState({
+          operator: input,
+          displayValue:
+            (operator !== null
+              ? displayValue.substr(0, displayValue.length - 1)
+              : displayValue) + input,
+        });
+        break;
 
-      if (operator === "*") {
-        setCalVal(prev * current);
-        setOperator(null);
-      }
+      case ".":
+        let dot = displayValue.slice(-1);
+        this.setState({
+          displayValue: dot !== "." ? displayValue + input : displayValue,
+        });
+        break;
 
-      if (operator === "/") {
-        setCalVal(prev / current);
-        setOperator(null);
-      }
+      case "DEL":
+        let string = displayValue.toString();
+        let deletedString = string.substr(0, string.length - 1);
+        let length = string.length;
+        this.setState({
+          displayValue: length == 1 ? "0" : deletedString,
+        });
+        break;
+
+      case "=":
+        console.log(displayValue % 1);
+        this.setState({
+          displayResult: eval(displayValue) % 1 === 0 ? eval(displayValue) : eval(displayValue),
+          operator: null,
+        });
+        break;
     }
   };
-  return (
-    <View style={styles.container}>
-      <View style={styles.ContainerResult1}>
-        <Text style={styles.value}>
-          calVal:{calVal} operator:{operator} NextVal:{NextVal}
-        </Text>
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <View style={styles.resultContainer}>
+          <Text style={styles.value}>{this.state.displayValue}</Text>
+        </View>
+        <View style={styles.calContainer}>
+          <Text style={styles.value}>{this.state.displayResult}</Text>
+        </View>
+        <View style={styles.inputContainer}>{this.renderButton()}</View>
       </View>
-      <View style={styles.ContainerResult}>
-        <Text style={styles.value}>{calVal}</Text>
-      </View>
-      <View style={styles.InputContainer}>
-        <Buttonui handlePress={this.handlePress} />
-      </View>
-    </View>
-  );
+    );
+  }
 }
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: "flex-end",
     flex: 1,
   },
   value: {
@@ -76,18 +130,22 @@ const styles = StyleSheet.create({
     fontSize: 40,
     textAlign: "right",
     marginRight: 20,
+    marginTop: height * 0.09,
   },
-  ContainerResult: {
-    backgroundColor: "white",
-    justifyContent: "center",
-    flex: 1,
+  resultContainer: {
+    flex: 3,
+    backgroundColor: "#FFF",
   },
-  ContainerResult1: {
-    backgroundColor: "white",
-    justifyContent: "center",
+  calContainer: {
     flex: 2,
+    backgroundColor: "#DDD",
   },
-  InputContainer: {
-    backgroundColor: "green",
+  inputContainer: {
+    flex: 8,
+    backgroundColor: "#777",
+  },
+  inputRow: {
+    flex: 1,
+    flexDirection: "row",
   },
 });
