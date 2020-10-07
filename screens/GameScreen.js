@@ -10,16 +10,27 @@ const GameScreen = (props) => {
   const [rounds, setRounds] = useState(0);
 
   if (confirmed) {
-    confirmedOutput = (
-      <View style={styles.resultContainer}>
-        <Text>You selected</Text>
-        <View style={styles.numberContainer}>
-          <Text style={styles.number}>{selectedNumber}</Text>
+    if (props.answer > selectedNumber) {
+      confirmedOutput = (
+        <View style={styles.resultContainer}>
+          <Text>You selected</Text>
+          <View style={styles.numberContainer}>
+            <Text style={styles.number}>{selectedNumber}</Text>
+            <Text>This answer is greater than. Rounds: {rounds}</Text>
+          </View>
         </View>
-        <Text>This answer is great. Rounds: {rounds}</Text>
-      </View>
-    );
-    if (props.answer == selectedNumber) {
+      );
+    } else if (props.answer < selectedNumber) {
+      confirmedOutput = (
+        <View style={styles.resultContainer}>
+          <Text>You selected</Text>
+          <View style={styles.numberContainer}>
+            <Text style={styles.number}>{selectedNumber}</Text>
+            <Text>This answer is less than. Rounds: {rounds}</Text>
+          </View>
+        </View>
+      );
+    } else if (props.answer == selectedNumber) {
       props.gameOverHandler(rounds);
     }
   }

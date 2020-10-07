@@ -5,12 +5,13 @@ import Colors from "../constants/colors";
 const GameOverScreen = (props) => {
   return (
     <View style={styles.screen}>
-      <Text>The Game is Over!</Text>
-      <Text>Number of rounds: {props.correctNumber}</Text>
-      <Text> Correct Number was: {props.guessRounds}</Text>
+      <Text style={{ padding: 10 }}>The Game is Over!</Text>
+      <Text style={{ padding: 10 }}>Number of rounds: {props.correctNumber}</Text>
+      <Text style={{ padding: 10 }}> Correct Number was: {props.guessRounds}</Text>
       <Button
         title="New Game"
         color={Colors.accent}
+        style={{ padding: 10 }}
         onPress={() => props.configureNewGameHandler()}
       />
     </View>
