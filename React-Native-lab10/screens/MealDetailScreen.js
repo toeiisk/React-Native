@@ -33,7 +33,7 @@ const MealDetailScreen = (props) => {
         <Button
           title="Go Back to Categories"
           onPress={() => {
-            props.navigation.navigate('Categories')
+            props.navigation.PoptoTop()
           }}
         />
       </ScrollView>
